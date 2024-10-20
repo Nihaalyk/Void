@@ -6,17 +6,28 @@ from fastapi import FastAPI, HTTPException
 import os
 from pydantic import BaseModel
 import asyncpg
+from routers.file_upload_router import router as file_upload_router
+from database import init_db, close_db
 
 load_dotenv()
 
 app = FastAPI()
 
+app.include_router(file_upload_router)
+
 client = AsyncGroq(api_key=os.environ.get("GROQ_API_KEY"))
 
 @app.on_event("startup")
-async def on_startup():
+async def startup_event():
+    await init_db()
     global db
     db = await asyncpg.connect(os.environ.get("DATABASE_URL"))
+    # Existing startup code...
+
+@app.on_event("shutdown")
+async def shutdown_event():
+    await close_db()
+    # Existing shutdown code...
 
 @app.get("/chat_history")
 async def get_history(user_id: str):
