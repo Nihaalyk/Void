@@ -36,4 +36,3 @@ export const graphs = pgTable("graphs", {
   updatedAt: timestamp("updated_at").defaultNow().$onUpdate(),
   userId: uuid("user_id").references(() => users.id),
 })
-

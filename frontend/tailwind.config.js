@@ -11,6 +11,8 @@ module.exports = {
         background: "var(--background)",
         foreground: "var(--foreground)",
         accent: "var(--accent)",
+        darkgreen: "var(--darkgreen)",
+        lightgreen: "var(--lightgreen)",
       },
       fontFamily: {
         inter: "var(--font-inter)",
