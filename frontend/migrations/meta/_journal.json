@@ -8,6 +8,13 @@
       "when": 1729431029930,
       "tag": "0000_parallel_tyrannus",
       "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "7",
+      "when": 1729435164078,
+      "tag": "0001_abnormal_captain_cross",
+      "breakpoints": true
     }
   ]
 }

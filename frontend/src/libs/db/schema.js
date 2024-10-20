@@ -1,13 +1,15 @@
 import {
   uuid,
+  integer,
+  index,
+  serial,
+  vector,
+  varchar,
   text,
   timestamp,
   boolean,
   pgTable,
   pgEnum,
-  integer,
-  varchar,
-  serial,c
 } from "drizzle-orm/pg-core"
 
 export const users = pgTable("users", {
@@ -70,11 +72,21 @@ export const documentsTable = pgTable("documents", {
   updatedAt: timestamp("updated_at", { withTimezone: true }).defaultNow(),
 })
 
-export const chunksTable = pgTable("chunks", {
-  id: serial().primaryKey(),
-  documentId: integer("document_id")
-    .references(() => documentsTable.id)
-    .notNull(),
-  chunkIndex: integer("chunk_index").notNull(),
-  content: text().notNull(),
-})
+export const chunksTable = pgTable(
+  'chunks',
+  {
+    id: serial().primaryKey(),
+    documentId: integer('document_id')
+      .references(() => documentsTable.id)
+      .notNull(),
+    chunkIndex: integer("chunk_index").notNull(),
+    content: text().notNull(),
+    embedding: vector('embedding', {
+      dimensions: parseInt(process.env.EMBEDDING_DIMENSION)
+    }),
+  },
+  (table) => ({
+    embeddingIndex: index('embeddingIndex')
+      .using('hnsw', table.embedding.op('vector_cosine_ops')),
+  }),
+);
