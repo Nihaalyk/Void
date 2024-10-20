@@ -24,7 +24,7 @@ const D3visual = ({ data }) => {
     const width = 1920
     const height = 1080
 
-    const root = d3.hierarchy(data[0])
+    const root = d3.hierarchy(data)
     const treeLayout = d3
       .tree()
       .size([height, width])

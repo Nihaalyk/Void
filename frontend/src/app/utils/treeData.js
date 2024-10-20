@@ -1,3 +1,8 @@
+export const defaultTreeData = {
+  name: "",
+  children: [],
+}
+
 export const treeData = [
   {
     name: "Root",

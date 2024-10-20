@@ -15,7 +15,7 @@ module.exports = {
         lightgreen: "var(--lightgreen)",
       },
       fontFamily: {
-        inter: "var(--font-inter)",
+        mabry: "var(--font-mabry)",
       },
     },
   },
