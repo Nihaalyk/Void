@@ -7,7 +7,6 @@ import { useRouter } from "next/navigation"
 import toast, { Toaster } from "react-hot-toast"
 import { motion } from "framer-motion"
 import Link from "next/link"
-import Image from "next/image"
 
 const SignUp = () => {
   const router = useRouter()

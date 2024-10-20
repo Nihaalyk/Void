@@ -29,11 +29,16 @@ const Choose = () => {
     formData.append("file", file)
 
     axios
-      .post("https://tops-gibbon-friendly.ngrok-free.app/api/test", formData, {
-        "Content-Type": "multipart/form-data",
-      })
+      .post(
+        "https://tops-gibbon-friendly.ngrok-free.app/api/knowledge-graph",
+        formData,
+        {
+          "Content-Type": "multipart/form-data",
+        }
+      )
       .then((res) => {
         console.log(res)
+        setTreeData(res.data)
       })
       .catch((err) => {
         console.log(err)

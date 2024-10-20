@@ -9,6 +9,8 @@ import asyncpg
 from routers.file_upload_router import router as file_upload_router
 from database import init_db, close_db
 from fastapi.middleware.cors import CORSMiddleware
+from processors.file_processor import process_file
+import nibs.generate_knowledge_graph_groq as summarize_with_groq
 
 load_dotenv()
 
@@ -101,3 +103,15 @@ async def root(request: ChatRequest):
 async def test_route(file: UploadFile = File(...)):
     print(file)
     return 'reads file'
+
+@app.post('/api/knowledge-graph')
+async def knowledge_graph(file: UploadFile = File(...)):
+    try:
+    text = await process_file(file)
+        summary = summarize_with_groq(text)
+
+        return summary
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Error: {str(e)}")
+
+
