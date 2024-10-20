@@ -1,12 +1,14 @@
-# main.py
 from fastapi import FastAPI
 import os
 from groq import Groq
 from dotenv import load_dotenv
-from app.routers import file_handler
-from app.database import engine
 from app import models
-import asyncio
+from fastapi import FastAPI, HTTPException
+import os
+from groq import Groq
+from dotenv import load_dotenv
+from pydantic import BaseModel
+import asyncpg
 
 load_dotenv()
 
@@ -16,22 +18,29 @@ app = FastAPI()
 client = Groq(api_key=os.environ.get("GROQ_API_KEY"))
 
 @app.on_event("startup")
-async def startup_event():
-    # Create database tables
-    async with engine.begin() as conn:
-        await conn.run_sync(models.Base.metadata.create_all)
+async def on_startup():
+    global db
+    db = await asyncpg.connect(os.environ.get("DATABASE_URL"))
 
-# Include the file handler router
-app.include_router(file_handler.router)
+class ChatRequest(BaseModel):
+    content: str
 
 @app.get("/chat")
-async def root():
-    return client.chat.completions.create(
-        messages=[
-            {
-                "role": "user",
-                "content": "Explain the importance of fast language models",
-            }
-        ],
-        model="llama3-8b-8192",
-    )
+async def root(request: ChatRequest):
+    try:
+        response = client.chat.completions.create(
+            messages=[
+                {"role": "user", "content": request.content}
+            ],
+            model="llama3-8b-8192",
+        )
+
+        chat_output = response["choices"][0]["message"]["content"]
+
+        return {"response": chat_output}
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Error: {str(e)}")
+
+@app.get('/db_test')
+async def query():
+    return await db.fetchval('SELECT * FROM users')
