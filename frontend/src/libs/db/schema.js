@@ -37,3 +37,9 @@ export const graphs = pgTable("graphs", {
   userId: uuid("user_id").references(() => users.id),
 })
 
+
+export const formattedTexts = pgTable("formatted_texts", {
+  id: uuid("id").primaryKey().defaultRandom(),
+  content: text().notNull(),
+  createdAt: timestamp("created_at").defaultNow()
+})
