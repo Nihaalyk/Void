@@ -8,7 +8,7 @@ const D3visual = ({ data }) => {
   if (!data) {
     return (
       <Container>
-        <div className="w-full h-full flex items-center justify-center">
+        <div className="w-full h-full flex items-center justify-center border-2 border-accent rounded-md">
           <p className="text-2xl text-center text-foreground">
             No data to visualize
           </p>
