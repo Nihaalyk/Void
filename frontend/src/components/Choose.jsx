@@ -21,9 +21,28 @@ const Choose = () => {
   }
 
   const handleFile = () => {
-    if (file) {
-      console.log(fileType)
+    if (!file && !fileType) {
+      message.error("Please upload a file")
     }
+
+    const formData = new FormData()
+    formData.append("file", file)
+
+    axios
+      .post(
+        "https://tops-gibbon-friendly.ngrok-free.app/api/knowledge-graph",
+        formData,
+        {
+          "Content-Type": "multipart/form-data",
+        }
+      )
+      .then((res) => {
+        console.log(res)
+        setTreeData(res.data)
+      })
+      .catch((err) => {
+        console.log(err)
+      })
   }
 
   return (
