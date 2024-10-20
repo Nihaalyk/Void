@@ -1,5 +1,6 @@
 from fastapi import FastAPI, File, UploadFile
 import os
+from langchain_text_splitters import RecursiveCharacterTextSplitter
 from groq import AsyncGroq
 from dotenv import load_dotenv
 from fastapi import FastAPI, HTTPException
@@ -165,5 +166,6 @@ async def knowledge_graph(file: UploadFile = File(...)):
 
         return summary
     except Exception as e:
+        print(e)
         raise HTTPException(status_code=500, detail=f"Error: {str(e)}")
 
