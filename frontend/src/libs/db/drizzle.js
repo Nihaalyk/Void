@@ -4,6 +4,8 @@ import { drizzle } from "drizzle-orm/neon-http"
 
 config({ path: ".env" })
 
-const sql = neon(process.env.DATABASE_URL)
+const sql = neon(
+  "postgresql://void_owner:8tWKVyvoJ2fH@ep-red-voice-a1szdot5.ap-southeast-1.aws.neon.tech/void?sslmode=require"
+)
 
 export const db = drizzle(sql)

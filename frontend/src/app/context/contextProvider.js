@@ -1,20 +1,37 @@
-import { useContext, createContext } from "react"
-import { useState } from "react"
+import { createContext, useState, useEffect, useContext } from "react"
+import { getCurrentUser } from "@/app/actions/getCurrentUser"
 
-const Context = createContext()
+// Create a context for the user
+const UserContext = createContext()
 
-const contextProvider = ({ children }) => {
-  const [treeDat, setTreeDat] = useState([])
+// Create a provider component
+export const ContextProvider = ({ children }) => {
+  const [currentUser, setCurrentUser] = useState(null)
+  const [loading, setLoading] = useState(true)
+
+  useEffect(() => {
+    const fetchUser = async () => {
+      try {
+        const user = await getCurrentUser()
+        setCurrentUser(user)
+      } catch (error) {
+        console.error("Failed to fetch current user:", error)
+      } finally {
+        setLoading(false)
+      }
+    }
+
+    fetchUser()
+  }, [])
 
   return (
-    <Context.Provider value={{ treeDat, setTreeDat }}>
+    <UserContext.Provider value={{ currentUser, loading }}>
       {children}
-    </Context.Provider>
+    </UserContext.Provider>
   )
 }
 
-const useGlobalContext = () => {
-  return useContext(Context)
+// Custom hook to use the UserContext
+export const useUser = () => {
+  return useContext(UserContext)
 }
-
-export { contextProvider, useGlobalContext, Context }
