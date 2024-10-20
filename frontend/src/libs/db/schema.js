@@ -5,6 +5,7 @@ import {
   timestamp,
   boolean,
   pgTable,
+  pgEnum
 } from "drizzle-orm/pg-core"
 
 export const users = pgTable("users", {
@@ -43,3 +44,16 @@ export const formattedTexts = pgTable("formatted_texts", {
   content: text().notNull(),
   createdAt: timestamp("created_at").defaultNow()
 })
+
+export const roleEnum = pgEnum('role_enum', ['user', 'assistant']);
+
+export const chatHistory = pgTable("chat_history", {
+  id: uuid("id").primaryKey().defaultRandom(),
+  userId: uuid("user_id")
+    .notNull()
+    .references(() => users.id),
+  role: roleEnum("role").notNull(),
+  content: text("content").notNull(),
+  imageUrl: text("image_url").default(null),
+  createdAt: timestamp("created_at").defaultNow(),
+});

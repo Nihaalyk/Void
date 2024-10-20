@@ -15,6 +15,13 @@
       "when": 1729416772016,
       "tag": "0001_strange_stone_men",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1729417955396,
+      "tag": "0002_vengeful_spot",
+      "breakpoints": true
     }
   ]
 }
