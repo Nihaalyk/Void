@@ -20,28 +20,29 @@ export const authOptions = {
           throw new Error("Invalid credentials")
         }
 
-        const user = await db.query.users.findFirst({
-          where: eq(users.email, credentials.email),
-        })
+        const user = await db
+          .select()
+          .from(users)
+          .where(eq(users.email, credentials.email))
 
-        if (!user || !user?.password) {
+        if (user.length === 0 || !user[0].password) {
           throw new Error("Invalid Email or Password")
         }
 
-        if (!user.emailVerified) {
+        if (!user[0].emailVerified) {
           throw new Error("Please verify your email first")
         }
 
         const passwordMatch = await bcrypt.compare(
           credentials.password,
-          user.password
+          user[0].password
         )
 
         if (!passwordMatch) {
           throw new Error("Invalid Email or Password")
         }
 
-        return user
+        return user[0]
       },
     }),
   ],

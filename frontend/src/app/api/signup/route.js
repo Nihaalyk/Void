@@ -1,24 +1,23 @@
 import { NextResponse } from "next/server"
 import { db } from "@/libs/db/drizzle"
 import { eq } from "drizzle-orm"
-import { users } from "@/libs/db/schema"
+import { users, tokens } from "@/libs/db/schema"
 import bcrypt from "bcryptjs"
 import { generateVerificationToken } from "@/libs/misc/token"
 import { verifyMail } from "@/utils/verifyEmail"
+import { sendMail } from "@/libs/misc/sendMail"
 
 export async function POST(request) {
   try {
     const body = await request.json()
     const { name, email, password } = body
-    
-    console.log(body)
 
-    const userExists = await db.query.users.findFirst({
-      where: eq(users.email, email),
-    })
+    const userExists = await db
+      .select()
+      .from(users)
+      .where(eq(users.email, email))
 
-
-    if (userExists) {
+    if (userExists.length > 0) {
       return NextResponse.json(
         { error: "User already exists" },
         { status: 400 }
@@ -31,7 +30,9 @@ export async function POST(request) {
       name,
       email,
       password: hashedPassword,
-    })
+    }).returning()
+
+    console.log("user:", user[0].id)
 
     // INSERT TOKEN
     const { verificationToken, verificationTokenExpiredAt } =
@@ -40,7 +41,7 @@ export async function POST(request) {
       token: verificationToken,
       expiresAt: verificationTokenExpiredAt,
       type: "EMAIL_VERIFICATION",
-      userId: user.id,
+      userId: user[0].id,
     })
 
     const verifyEmailUrl = `${process.env.NEXT_PUBLIC_APP_URL}/verify-email?token=${verificationToken}`

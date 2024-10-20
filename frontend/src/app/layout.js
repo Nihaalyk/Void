@@ -1,20 +1,20 @@
-"use client"
-
 import { Inter } from "next/font/google"
 import "./globals.css"
 import Navbar from "@/components/Navbar"
-import { Context } from "./context/contextProvider"
+import { getCurrentUser } from "@/app/actions/getCurrentUser"
 
 const inter = Inter({
   subsets: ["latin"],
   variable: "--font-inter",
 })
 
-export default function RootLayout({ children }) {
+export default async function RootLayout({ children }) {
+  const currentUser = await getCurrentUser()
+
   return (
     <html lang="en">
       <body className={`${inter.variable} font-inter antialiased`}>
-        <Navbar />
+        <Navbar currentUser={currentUser} />
         {children}
       </body>
     </html>

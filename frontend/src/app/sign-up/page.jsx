@@ -150,7 +150,7 @@ const SignUp = () => {
               Password
             </motion.label>
             <input
-              type="tel"
+              type="password"
               id="password"
               value={formData.password}
               onChange={(e) =>

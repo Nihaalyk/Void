@@ -6,11 +6,7 @@ import Tesseract from "tesseract.js"
 import D3visual from "./D3visual"
 import { message } from "antd"
 import axios from "axios"
-import {
-  treeData as init,
-  treeDat as init2,
-  treeData2 as init3,
-} from "@/app/utils/treeData"
+import { treeData as init } from "@/app/utils/treeData"
 
 const Choose = () => {
   const [current, setCurrent] = useState("pdf")
