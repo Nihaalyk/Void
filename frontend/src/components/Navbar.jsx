@@ -5,6 +5,8 @@ import { signOut } from "next-auth/react"
 import toast, { Toaster } from "react-hot-toast"
 
 const Navbar = ({ currentUser }) => {
+  console.log(currentUser)
+
   return (
     <nav className="bg-accent flex justify-between p-4 ">
       <Toaster />
@@ -18,7 +20,7 @@ const Navbar = ({ currentUser }) => {
         {currentUser ? (
           <>
             <Link
-              href="/graphs"
+              href="/mygraphs"
               className="bg-background px-4 py-2 rounded-full"
             >
               <span className="font-bold text-sm text-accent">My Graphs</span>
