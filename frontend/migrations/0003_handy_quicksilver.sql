@@ -1,1 +1,0 @@
-ALTER TABLE "formatted_texts" RENAME COLUMN "content" TO "text";
