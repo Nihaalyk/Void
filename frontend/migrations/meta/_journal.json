@@ -15,6 +15,13 @@
       "when": 1729435164078,
       "tag": "0001_abnormal_captain_cross",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1729436149609,
+      "tag": "0002_needy_spyke",
+      "breakpoints": true
     }
   ]
 }

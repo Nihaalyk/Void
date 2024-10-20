@@ -34,6 +34,7 @@ export const tokens = pgTable("tokens", {
 
 export const graphs = pgTable("graphs", {
   id: uuid("id").primaryKey().defaultRandom(),
+  name: varchar(20).notNull().default('Your Void Graph'),
   raw_text: text("raw_text").notNull(),
   graph: text("graph").notNull(),
   extra: text("extra"),
