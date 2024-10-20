@@ -11,13 +11,23 @@ load_dotenv()
 
 app = FastAPI()
 
-# Initialize Groq client
 client = AsyncGroq(api_key=os.environ.get("GROQ_API_KEY"))
 
 @app.on_event("startup")
 async def on_startup():
     global db
     db = await asyncpg.connect(os.environ.get("DATABASE_URL"))
+
+@app.get("/chat_history")
+async def get_history(user_id: str):
+    return await db.fetch(
+        '''
+        SELECT role, content
+        FROM chat_history
+        WHERE user_id = $1;
+        ''', 
+        user_id
+    )
 
 class ChatRequest(BaseModel):
     user_id: str
@@ -43,12 +53,14 @@ async def root(request: ChatRequest):
             request.user_id, request.prompt
         )
 
+        messages = [
+            *map(lambda row: {"role": row['role'], "content": row['content']}, rows),
+            {'role': 'user', 'content': request.prompt}
+        ]
+
         response = (
             await client.chat.completions.create(
-                messages=[
-                    *map(lambda row: {"role": row['role'], "content": row['content']}, rows),
-                    {'role': 'user', 'content': request.prompt}
-                ],
+                messages=messages,
                 model="llama3-8b-8192",
             )
         ).choices[0].message.content
@@ -62,9 +74,6 @@ async def root(request: ChatRequest):
             request.user_id, response
         )
 
-        return response
+        return {"role": 'assistant', "content": response}
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Error: {str(e)}")
-
-@app.get('/db_test')
-async def query(): return await db.fetch('SELECT * FROM chat_history')
