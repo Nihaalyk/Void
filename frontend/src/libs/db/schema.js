@@ -40,7 +40,7 @@ export const graphs = pgTable("graphs", {
 
 export const formattedTexts = pgTable("formatted_texts", {
   id: uuid("id").primaryKey().defaultRandom(),
-  content: text().notNull(),
+  text: text().notNull(),
   createdAt: timestamp("created_at").defaultNow(),
 })
 
