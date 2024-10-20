@@ -31,10 +31,12 @@ app.include_router(file_upload_router)
 client = AsyncGroq(api_key=os.environ.get("GROQ_API_KEY"))
 ollama = AsyncClient(host='http://localhost:11434')
 
-splitter = RecursiveCharacterTextSplitter(
-        chunk_size=8000,
-        chunk_overlap=500
-)
+# uncoment this code if you want to use the splitter  
+
+# splitter = RecursiveCharacterTextSplitter(
+#         chunk_size=8000,
+#         chunk_overlap=500
+# )
 
 @app.on_event("startup")
 async def startup_event():

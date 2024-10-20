@@ -5,19 +5,9 @@ import Container from "./Container"
 const D3visual = ({ data }) => {
   const svgRef = useRef()
 
-  if (!data) {
-    return (
-      <Container>
-        <div className="w-full h-full flex items-center justify-center border-2 border-accent rounded-md">
-          <p className="text-2xl text-center text-foreground">
-            No data to visualize
-          </p>
-        </div>
-      </Container>
-    )
-  }
-
   useEffect(() => {
+    if (!data) return
+
     const svg = d3.select(svgRef.current)
     svg.selectAll("*").remove()
 
@@ -28,7 +18,7 @@ const D3visual = ({ data }) => {
     const treeLayout = d3
       .tree()
       .size([height, width])
-      .nodeSize([20, 400])
+      .nodeSize([40, 400])
       .separation((a, b) => (a.parent === b.parent ? 1 : 4))
 
     treeLayout(root)
@@ -83,6 +73,18 @@ const D3visual = ({ data }) => {
       .style("fill", "#3e363f")
       .text((d) => d.data.name)
   }, [data])
+
+  if (!data) {
+    return (
+      <Container>
+        <div className="w-full h-full flex items-center justify-center border-2 border-accent rounded-md">
+          <p className="text-2xl text-center text-foreground">
+            No data to visualize
+          </p>
+        </div>
+      </Container>
+    )
+  }
 
   return (
     <Container>

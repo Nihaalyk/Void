@@ -1,12 +1,11 @@
-"use client"
-
 import Choose from "@/components/Choose"
-import D3visual from "@/components/D3visual"
+import { getCurrentUser } from "@/app/actions/getCurrentUser"
 
-const page = () => {
+const page = async () => {
+  const currentUser = await getCurrentUser()
   return (
     <section className="h-full flex flex-col justify-center">
-      <Choose />
+      <Choose currentUser={currentUser} />
     </section>
   )
 }
