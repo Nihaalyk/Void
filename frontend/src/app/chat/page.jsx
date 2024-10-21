@@ -1,15 +1,9 @@
 "use client"
 
-import { useState } from "react"
-
+import { useState, useEffect } from "react"
 
 const Chat = () => {
-  
-
-  return <div>
-
-    
-  </div>
+  return 
 }
 
 export default Chat

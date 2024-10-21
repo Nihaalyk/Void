@@ -5,23 +5,44 @@ import { NextResponse } from "next/server"
 export async function POST(request) {
   try {
     const body = await request.json()
-    const { userId, graph } = body
+    const { graph, id, raw_text } = body
 
-    const graphData = await db
-      .insert(graphs)
-      .values({
-        graph,
-        user: userId,
-      })
-      .returning()
+    console.log("Request body:", body)
 
-    return NextResponse.json({
-      message: "Graph saved successfully",
-      data: graphData,
+    if (!id || !graph) {
+      return NextResponse.json(
+        {
+          message: "Invalid request",
+        },
+        {
+          status: 400,
+        }
+      )
+    }
+
+    await db.insert(graphs).values({
+      graph: JSON.stringify(graph),
+      userId: id,
+      raw_text,
+      name: "Your Void Graph",
     })
+
+    return NextResponse.json(
+      {
+        message: "Graph saved successfully",
+      },
+      {
+        status: 200,
+      }
+    )
   } catch (error) {
-    return NextResponse.json({
-      message: "Failed to save graph",
-    })
+    return NextResponse.json(
+      {
+        message: "Failed to save graph",
+      },
+      {
+        status: 500,
+      }
+    )
   }
 }

@@ -1,5 +1,5 @@
 {
-  "id": "6d69c669-2d1d-466c-8d46-4c16f8357af0",
+  "id": "92adba71-feed-4b26-be99-a4c27edf9572",
   "prevId": "00000000-0000-0000-0000-000000000000",
   "version": "7",
   "dialect": "postgresql",
@@ -57,55 +57,6 @@
           "tableTo": "users",
           "columnsFrom": [
             "user_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
-          "onDelete": "no action",
-          "onUpdate": "no action"
-        }
-      },
-      "compositePrimaryKeys": {},
-      "uniqueConstraints": {},
-      "checkConstraints": {}
-    },
-    "public.chunks": {
-      "name": "chunks",
-      "schema": "",
-      "columns": {
-        "id": {
-          "name": "id",
-          "type": "serial",
-          "primaryKey": true,
-          "notNull": true
-        },
-        "document_id": {
-          "name": "document_id",
-          "type": "integer",
-          "primaryKey": false,
-          "notNull": true
-        },
-        "chunk_index": {
-          "name": "chunk_index",
-          "type": "integer",
-          "primaryKey": false,
-          "notNull": true
-        },
-        "content": {
-          "name": "content",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": true
-        }
-      },
-      "indexes": {},
-      "foreignKeys": {
-        "chunks_document_id_documents_id_fk": {
-          "name": "chunks_document_id_documents_id_fk",
-          "tableFrom": "chunks",
-          "tableTo": "documents",
-          "columnsFrom": [
-            "document_id"
           ],
           "columnsTo": [
             "id"
@@ -222,6 +173,13 @@
           "primaryKey": true,
           "notNull": true,
           "default": "gen_random_uuid()"
+        },
+        "name": {
+          "name": "name",
+          "type": "varchar",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "'Your Void Graph'"
         },
         "raw_text": {
           "name": "raw_text",

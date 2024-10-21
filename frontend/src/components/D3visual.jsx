@@ -70,14 +70,14 @@ const D3visual = ({ data }) => {
       .attr("dy", 3)
       .attr("x", (d) => (d.children ? -8 : 8))
       .style("text-anchor", (d) => (d.children ? "end" : "start"))
-      .style("fill", "#3e363f")
+      .style("fill", "#fff")
       .text((d) => d.data.name)
   }, [data])
 
   if (!data) {
     return (
       <Container>
-        <div className="w-full h-full flex items-center justify-center border-2 border-accent rounded-md">
+        <div className="w-full h-[800px] flex items-center justify-center border-2 border-foreground rounded-md">
           <p className="text-2xl text-center text-foreground">
             No data to visualize
           </p>
@@ -88,7 +88,7 @@ const D3visual = ({ data }) => {
 
   return (
     <Container>
-      <div className="w-full h-full border-2 border-accent rounded-md">
+      <div className="w-full h-full border-2 border-foreground rounded-md">
         <svg ref={svgRef} className="w-full h-full"></svg>
       </div>
     </Container>
