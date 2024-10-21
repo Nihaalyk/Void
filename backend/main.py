@@ -87,11 +87,10 @@ async def root(request: ChatRequest):
         )
 
         model = os.environ.get('EMBEDDING_MODEL')
-        prompt_embedding = ollama.embed(
+        prompt_embedding = (await ollama.embed(
             model=model,
             input=request.prompt
-        )
-        print(prompt_embedding)
+        ))['embeddings'][0]
 
         context = await db.fetch('''
          SELECT content
