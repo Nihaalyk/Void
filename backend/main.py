@@ -53,14 +53,16 @@ async def shutdown_event():
 
 @app.get("/api/chat-history")
 async def get_history(user_id: str):
-    return await db.fetch(
-        '''
-        SELECT id, role, content
-        FROM chat_history
-        WHERE user_id = $1;
-        ''', 
-        user_id
-    )
+    return { 
+        "messages": await db.fetch(
+            '''
+            SELECT id, role, content
+            FROM chat_history
+            WHERE user_id = $1;
+            ''', 
+            user_id
+        )
+    }
 
 class ChatRequest(BaseModel):
     user_id: str
@@ -71,7 +73,7 @@ async def root(request: ChatRequest):
     try:
         rows = await db.fetch(
             '''
-            SELECT role, content
+            SELECT id, role, content
             FROM chat_history
             WHERE user_id = $1;
             ''', 
