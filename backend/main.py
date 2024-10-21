@@ -1,5 +1,7 @@
 from fastapi import FastAPI, File, UploadFile
+from get_yt_vids import get_study_resources
 import os
+from langchain_text_splitters import RecursiveCharacterTextSplitter
 from groq import AsyncGroq
 from dotenv import load_dotenv
 from fastapi import FastAPI, HTTPException
@@ -8,10 +10,10 @@ from pydantic import BaseModel
 import asyncpg
 from routers.file_upload_router import router as file_upload_router
 from database import init_db, close_db
-from fastapi.middleware.cors import CORSMiddleware
 from processors.file_processor import process_file
 from nibs.generate_knowledge_graph_groq import summarize_with_groq
 from ollama import AsyncClient
+from fastapi.middleware.cors import CORSMiddleware
 
 load_dotenv()
 
@@ -30,10 +32,12 @@ app.include_router(file_upload_router)
 client = AsyncGroq(api_key=os.environ.get("GROQ_API_KEY"))
 ollama = AsyncClient(host='http://localhost:11434')
 
-splitter = RecursiveCharacterTextSplitter(
-        chunk_size=8000,
-        chunk_overlap=500
-)
+# uncoment this code if you want to use the splitter  
+
+# splitter = RecursiveCharacterTextSplitter(
+#         chunk_size=8000,
+#         chunk_overlap=500
+# )
 
 @app.on_event("startup")
 async def startup_event():
@@ -165,5 +169,14 @@ async def knowledge_graph(file: UploadFile = File(...)):
 
         return summary
     except Exception as e:
+        print(e)
         raise HTTPException(status_code=500, detail=f"Error: {str(e)}")
 
+# Your API keys here
+YOUTUBE_API_KEY = os.environ.get('YOUTUBE_API_KEY')
+GOOGLE_API_KEY = os.environ.get('GOOGLE_API_KEY')
+GOOGLE_CSE_ID = os.environ.get('GOOGLE_CSE_ID')
+
+@app.post('/yt_links')
+async def retrieve_yt_links(keyword: str):
+    return get_study_resources(keyword, YOUTUBE_API_KEY, GOOGLE_API_KEY, GOOGLE_CSE_ID)
