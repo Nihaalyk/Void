@@ -51,11 +51,11 @@ async def shutdown_event():
     await close_db()
     # Existing shutdown code...
 
-@app.get("/api/chat_history")
+@app.get("/api/chat-history")
 async def get_history(user_id: str):
     return await db.fetch(
         '''
-        SELECT role, content
+        SELECT id, role, content
         FROM chat_history
         WHERE user_id = $1;
         ''', 
