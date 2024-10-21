@@ -10,12 +10,10 @@
   --lightgreen: #a3b18a;
 }
 
-@apply text-balance;
-
-@apply 
-
 body {
   font-family: Arial, Helvetica, sans-serif;
+  background-color: var(--foreground);
+  color: var(--background);
 }
 
 @layer utilities {
@@ -49,4 +47,47 @@ body {
 
 .form-btn:hover::before {
   width: 100%;
+}
+
+.scrollbar::-webkit-scrollbar {
+  width: 14px;
+}
+
+.scrollbar::-webkit-scrollbar-thumb {
+  background-color: var(--background);
+  border-radius: 10px;
+  background-clip: content-box;
+  border: 3px solid transparent;
+}
+
+.markdown-content {
+  font-family: Arial, sans-serif;
+  line-height: 1.6;
+}
+
+.markdown-content h1 {
+  font-size: 2em;
+  margin-bottom: 0.5em;
+}
+
+.markdown-content p {
+  margin-bottom: 1em;
+}
+
+.markdown-content ul {
+  list-style-type: disc;
+  margin-left: 20px;
+}
+
+.markdown-content strong {
+  font-weight: bold;
+}
+
+.markdown-content em {
+  font-style: italic;
+}
+
+.markdown-content a {
+  color: blue;
+  text-decoration: underline;
 }

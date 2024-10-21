@@ -3,8 +3,11 @@ aiohappyeyeballs==2.4.3
 aiohttp==3.10.10
 aiosignal==1.3.1
 annotated-types==0.7.0
+wikipedia-api
 anyio==4.6.2.post1
-app==0.0.1
+langchain-text-splitters
+google-api-python-client
+ollama
 asyncpg==0.30.0
 attrs==24.2.0
 blinker==1.8.2

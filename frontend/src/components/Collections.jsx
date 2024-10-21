@@ -38,14 +38,14 @@ const Collections = ({ setSelectedData }) => {
     <section className="h-[800px] w-96 m-4 rounded-md overflow-y-auto">
       <Toaster />
       <div className="flex flex-col gap-2 p-2">
-        <h1 className="text-2xl font-bold mb-2 text-foreground">
+        <h1 className="text-2xl font-bold mb-2 text-background">
           Graph Collections
         </h1>
         {collections.map((collection) => (
           <div
             key={collection.id}
             onClick={() => handleClick(collection.graph)}
-            className="p-4 font-medium rounded-md bg-foreground text-background cursor-pointer"
+            className="p-4 font-medium rounded-md bg-background text-accent cursor-pointer"
           >
             {collection.name}
             <div className="flex gap-2 mt-2">

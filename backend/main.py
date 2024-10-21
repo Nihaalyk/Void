@@ -49,16 +49,18 @@ async def shutdown_event():
     await close_db()
     # Existing shutdown code...
 
-@app.get("/api/chat_history")
+@app.get("/api/chat-history")
 async def get_history(user_id: str):
-    return await db.fetch(
-        '''
-        SELECT role, content
-        FROM chat_history
-        WHERE user_id = $1;
-        ''', 
-        user_id
-    )
+    return { 
+        "messages": await db.fetch(
+            '''
+            SELECT id, role, content
+            FROM chat_history
+            WHERE user_id = $1;
+            ''', 
+            user_id
+        )
+    }
 
 class ChatRequest(BaseModel):
     user_id: str
@@ -69,7 +71,7 @@ async def root(request: ChatRequest):
     try:
         rows = await db.fetch(
             '''
-            SELECT role, content
+            SELECT id, role, content
             FROM chat_history
             WHERE user_id = $1;
             ''', 
@@ -85,46 +87,24 @@ async def root(request: ChatRequest):
         )
 
         model = os.environ.get('EMBEDDING_MODEL')
-        prompt_embedding = await ollama.embed(
+        prompt_embedding = (await ollama.embed(
             model=model,
             input=request.prompt
-        )
-        print(prompt_embedding)
+        ))['embeddings'][0]
 
-        context = await db.fetch(
-            '''
-            WITH similar_chunks AS (
-              SELECT
-                id as chunk_id,
-                document_id,
-                content,
-                1 - (embedding <=> $1) AS similarity
-              FROM
-                chunks
-              ORDER BY
-                embedding <=> $1
-            )
-            SELECT
-              sc.content,
-              d.source,
-                d.description
-            FROM
-              similar_chunks sc
-            JOIN
-              documents d
-            ON
-              sc.document_id = d.id
-            ORDER BY
-              sc.similarity DESC;
-            ''',
-            prompt_embedding
-        )
+        context = await db.fetch('''
+         SELECT content
+         FROM extracted_data
+         WHERE user_id = $1
+         ORDER BY embedding::vector(768) <=> $2
+         LIMIT 10;
+        ''', request.user_id, str(prompt_embedding))
 
         system_prompt = f'''
         - You are an exceptionally intelligent, charismatic, and resourceful AI assistant. Your ability to understand and respond to user inquiries is unmatched. Provide insightful, engaging, and tailored responses that exceed expectations and leave a lasting impression. 
         - If the user's prompt is related to the CONTEXT provided, base your response on that context for maximum relevance and effectiveness
         ------CONTEXT------
-        {context}
+        {'\n'.join([record['content'] for record in context])}
         -------------------
         '''
 

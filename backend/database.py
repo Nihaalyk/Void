@@ -1,6 +1,7 @@
 # app/database/db.py
 
 import asyncpg
+import ollama
 import os
 from dotenv import load_dotenv
 import logging
@@ -93,84 +94,13 @@ async def store_user(user_id: str, name: str, email: str = None):
 
 async def store_extracted_data(user_id: str, text: str):
     async with db_pool.acquire() as connection:
-        try:
-            await connection.execute(
-                '''
-                INSERT INTO extracted_data (user_id, content)
-                VALUES ($1, $2);
-                ''',
-                user_id, text
-            )
-            logger.info(f"Stored extracted data for user_id {user_id}.")
-        except Exception as e:
-            logger.error(f"Error storing extracted data for user_id {user_id}: {e}")
-            raise e
+        await connection.execute(
+            '''
+            INSERT INTO extracted_data (user_id, content)
+            VALUES ($1, $2);
+            ''',
+            user_id, text
+        )
 
-async def store_chat_history(user_id: str, role: str, content: str):
-    async with db_pool.acquire() as connection:
-        try:
-            await connection.execute(
-                '''
-                INSERT INTO chat_history (user_id, role, content)
-                VALUES ($1, $2, $3);
-                ''',
-                user_id, role, content
-            )
-            logger.info(f"Stored chat history: {role} role for user_id {user_id}.")
-        except Exception as e:
-            logger.error(f"Error storing chat history for user_id {user_id}: {e}")
-            raise e
-
-async def fetch_chat_history(user_id: str, limit: int = 10):
-    async with db_pool.acquire() as connection:
-        try:
-            rows = await connection.fetch(
-                '''
-                SELECT role, content
-                FROM chat_history
-                WHERE user_id = $1
-                ORDER BY created_at DESC
-                LIMIT $2;
-                ''', 
-                user_id, limit
-            )
-            logger.info(f"Fetched {len(rows)} chat history records for user_id {user_id}.")
-            return rows[::-1]  # Return in chronological order
-        except Exception as e:
-            logger.error(f"Error fetching chat history for user_id {user_id}: {e}")
-            raise e
-
-async def fetch_extracted_data(user_id: str) -> list:
-    async with db_pool.acquire() as connection:
-        try:
-            rows = await connection.fetch(
-                '''
-                SELECT content
-                FROM extracted_data
-                WHERE user_id = $1
-                ORDER BY created_at DESC;
-                ''',
-                user_id
-            )
-            logger.info(f"Fetched {len(rows)} extracted_data records for user_id {user_id}.")
-            return [row['content'] for row in rows]
-        except Exception as e:
-            logger.error(f"Error fetching extracted data for user_id {user_id}: {e}")
-            raise e
-
-async def store_summary_in_db(user_id: str, raw_text: str, summary: dict):
-    async with db_pool.acquire() as connection:
-        try:
-            timestamp = datetime.now()
-            summary_json = json.dumps(summary)
-            await connection.execute(
-                '''
-                INSERT INTO graphs (raw_text, graph, created_at)
-                VALUES ($1, $2, $3);
-                ''',
-                raw_text, summary_json, timestamp
-            )
-            logger.info("Summary successfully stored in the database.")
-        except Exception as e:
-            logger.error(f"Error storing summary for user_id {user_id}: {e}")
-            raise e
+async def close_db():
+    await db_pool.close()
