@@ -1,5 +1,6 @@
 /** @type {import('tailwindcss').Config} */
 module.exports = {
+  darkMode: ["class"],
   content: [
     "./src/pages/**/*.{js,ts,jsx,tsx,mdx}",
     "./src/components/**/*.{js,ts,jsx,tsx,mdx}",
@@ -11,13 +12,12 @@ module.exports = {
         background: "var(--background)",
         foreground: "var(--foreground)",
         accent: "var(--accent)",
-        darkgreen: "var(--darkgreen)",
-        lightgreen: "var(--lightgreen)",
-      },
-      fontFamily: {
-        mabry: "var(--font-mabry)",
+
+        fontFamily: {
+          mabry: "var(--font-mabry)",
+        },
       },
     },
+    plugins: [],
   },
-  plugins: [],
 }

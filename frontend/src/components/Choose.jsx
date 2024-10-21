@@ -14,6 +14,9 @@ const Choose = ({ currentUser }) => {
   const [fileType, setFileType] = useState(null)
   const [treeData, setTreeData] = useState(null)
   const [save, setSave] = useState(false)
+  const [graphName, setGraphName] = useState("")
+
+  console.log(currentUser)
 
   const handleFileChange = (e) => {
     const selectedFile = e.target.files[0]
@@ -56,18 +59,31 @@ const Choose = ({ currentUser }) => {
   }
 
   const handleSave = async () => {
-    await axios
-      .post("/api/savegraph", {
+    try {
+      console.log("Current User:", currentUser)
+
+      if (graphName == "") {
+        message.error("Please enter a graph name")
+        return
+      }
+
+      if (!currentUser || !currentUser.id) {
+        console.error("User not found")
+      }
+
+      const response = await axios.post("/api/savegraph", {
         graph: treeData,
-        user: currentUser.id,
+        id: currentUser.id,
+        raw_text: "This is a test",
       })
-      .then((res) => {
-        message.success("Saved!")
-        console.log(res)
-      })
-      .catch(() => {
-        message.error("Failed to save")
-      })
+
+      message.success("Saved!")
+      setSave(false)
+      graphName("")
+    } catch (error) {
+      console.error("Error:", error)
+      message.error("Failed to save")
+    }
   }
 
   const handleCancel = () => {
@@ -75,7 +91,7 @@ const Choose = ({ currentUser }) => {
   }
 
   return (
-    <section className="flex flex-col items-center justify-center gap-4 py-4">
+    <section className="flex flex-col items-center justify-center gap-4 pt-20">
       <div className="flex flex-col items-center justify-center gap-2 mt-6">
         <h2 className="text-4xl font-bold">Upload a file to visualize</h2>
       </div>
@@ -91,7 +107,7 @@ const Choose = ({ currentUser }) => {
           <button
             type="submit"
             onClick={handleFile}
-            className="w-full mt-6 py-2 bg-accent text-background rounded-full form-btn"
+            className="w-full mt-6 py-2 bg-foreground text-background rounded-full"
           >
             Visualize
           </button>
@@ -101,6 +117,12 @@ const Choose = ({ currentUser }) => {
       {save && (
         <div className="flex flex-col justify-center items-center gap-x-4">
           <p>Save the graph?</p>
+          <input
+            type="text"
+            placeholder="Graph name"
+            className="border-2 rounded-md p-2"
+            onChange={(e) => setGraphName(e.target.value)}
+          />
           <div className="flex gap-x-4 mt-2">
             <button
               onClick={handleSave}

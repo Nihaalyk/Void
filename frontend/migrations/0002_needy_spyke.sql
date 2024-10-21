@@ -1,1 +1,0 @@
-ALTER TABLE "graphs" ADD COLUMN "name" varchar DEFAULT 'Your Void Graph' NOT NULL;

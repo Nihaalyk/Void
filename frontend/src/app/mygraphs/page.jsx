@@ -7,7 +7,7 @@ import D3visual from "@/components/D3visual"
 const MyGraphs = () => {
   const [selectedData, setSelectedData] = useState(null)
   return (
-    <section className="flex flex-row">
+    <section className="flex flex-row pt-20">
       <Collections setSelectedData={setSelectedData} />
       <D3visual data={selectedData} />
     </section>

@@ -34,7 +34,7 @@ export const tokens = pgTable("tokens", {
 
 export const graphs = pgTable("graphs", {
   id: uuid("id").primaryKey().defaultRandom(),
-  name: varchar(20).notNull().default('Your Void Graph'),
+  name: varchar(20).notNull().default("Your Void Graph"),
   raw_text: text("raw_text").notNull(),
   graph: text("graph").notNull(),
   extra: text("extra"),
@@ -73,7 +73,7 @@ export const documentsTable = pgTable("documents", {
   updatedAt: timestamp("updated_at", { withTimezone: true }).defaultNow(),
 })
 
-export const chunksTable = pgTable(
+/* export const chunksTable = pgTable(
   'chunks',
   {
     id: serial().primaryKey(),
@@ -91,3 +91,4 @@ export const chunksTable = pgTable(
       .using('hnsw', table.embedding.op('vector_cosine_ops')),
   }),
 );
+ */

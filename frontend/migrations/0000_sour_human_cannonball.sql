@@ -8,13 +8,6 @@ CREATE TABLE IF NOT EXISTS "chat_history" (
 	"created_at" timestamp DEFAULT now()
 );
 --> statement-breakpoint
-CREATE TABLE IF NOT EXISTS "chunks" (
-	"id" serial PRIMARY KEY NOT NULL,
-	"document_id" integer NOT NULL,
-	"chunk_index" integer NOT NULL,
-	"content" text NOT NULL
-);
---> statement-breakpoint
 CREATE TABLE IF NOT EXISTS "documents" (
 	"id" serial PRIMARY KEY NOT NULL,
 	"user_id" uuid NOT NULL,
@@ -32,6 +25,7 @@ CREATE TABLE IF NOT EXISTS "formatted_texts" (
 --> statement-breakpoint
 CREATE TABLE IF NOT EXISTS "graphs" (
 	"id" uuid PRIMARY KEY DEFAULT gen_random_uuid() NOT NULL,
+	"name" varchar DEFAULT 'Your Void Graph' NOT NULL,
 	"raw_text" text NOT NULL,
 	"graph" text NOT NULL,
 	"extra" text,
@@ -64,12 +58,6 @@ CREATE TABLE IF NOT EXISTS "users" (
 --> statement-breakpoint
 DO $$ BEGIN
  ALTER TABLE "chat_history" ADD CONSTRAINT "chat_history_user_id_users_id_fk" FOREIGN KEY ("user_id") REFERENCES "public"."users"("id") ON DELETE no action ON UPDATE no action;
-EXCEPTION
- WHEN duplicate_object THEN null;
-END $$;
---> statement-breakpoint
-DO $$ BEGIN
- ALTER TABLE "chunks" ADD CONSTRAINT "chunks_document_id_documents_id_fk" FOREIGN KEY ("document_id") REFERENCES "public"."documents"("id") ON DELETE no action ON UPDATE no action;
 EXCEPTION
  WHEN duplicate_object THEN null;
 END $$;
