@@ -12,10 +12,9 @@ module.exports = {
         background: "var(--background)",
         foreground: "var(--foreground)",
         accent: "var(--accent)",
-
-        fontFamily: {
-          mabry: "var(--font-mabry)",
-        },
+      },
+      fontFamily: {
+        mabry: "var(--font-mabry)",
       },
     },
     plugins: [],

@@ -6,7 +6,7 @@ const page = async () => {
   const currentUser = await getCurrentUser()
   return (
     <>
-      <Hero />
+      <Hero currentUser={currentUser} />
     </>
   )
 }

@@ -68,8 +68,8 @@ const SignIn = () => {
     }).then((res) => {
       if (res?.ok) {
         toast.success("Logged in successfully")
-        router.refresh()
         router.push("/")
+        router.refresh()
       }
 
       if (res?.error) {
@@ -84,7 +84,7 @@ const SignIn = () => {
       <div className="h-auto flex flex-row select-none">
         <form
           action=""
-          className="flex flex-col w-full md:w-[400px] gap-y-2 p-6 rounded-md bg-darkgreen relative"
+          className="flex flex-col w-full md:w-[400px] gap-y-2 p-6 rounded-md border-2  relative"
         >
           <h2 className="text-4xl font-bold text-background text-center mb-4">
             Login
@@ -112,7 +112,7 @@ const SignIn = () => {
               }
               onFocus={() => handleFocus("email")}
               onBlur={() => handleBlur("email")}
-              className="px-4 py-2 bg-background border-2 border-none hover:border-lightgreen focus:border-lightgreen transition duration-300 rounded-md outline-none"
+              className="px-4 py-2 bg-background border-2 border-none hover:border-lightgreen focus:border-lightgreen transition duration-300 rounded-md outline-none text-accent"
             />
           </div>
 
@@ -130,7 +130,7 @@ const SignIn = () => {
               Password
             </motion.label>
             <input
-              type="tel"
+              type="password"
               id="password"
               value={formData.password}
               onChange={(e) =>
@@ -138,14 +138,14 @@ const SignIn = () => {
               }
               onFocus={() => handleFocus("password")}
               onBlur={() => handleBlur("password")}
-              className="px-4 py-2 bg-background border-2 border-none hover:border-lightgreen focus:border-lightgreen transition duration-300 rounded-md outline-none"
+              className="px-4 py-2 bg-background border-2 border-none hover:border-lightgreen focus:border-lightgreen transition duration-300 rounded-md outline-none text-accent"
             />
           </div>
 
           <button
             type="submit"
             onClick={handleSubmit}
-            className="w-full mt-6 py-2 bg-background rounded-full form-btn"
+            className="w-full mt-6 py-2 bg-background text-accent font-medium rounded-full hover:bg-zinc-300 transition"
           >
             Submit
           </button>

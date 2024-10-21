@@ -1,9 +1,10 @@
-"use client"
+import ChatComp from "@/components/ChatComp"
+import { getCurrentUser } from "@/app/actions/getCurrentUser"
 
-import { useState, useEffect } from "react"
+const Chat = async () => {
+  const currentUser = await getCurrentUser()
 
-const Chat = () => {
-  return 
+  return <ChatComp currentUser={currentUser} />
 }
 
 export default Chat

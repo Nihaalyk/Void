@@ -77,8 +77,8 @@ const D3visual = ({ data }) => {
   if (!data) {
     return (
       <Container>
-        <div className="w-full h-[800px] flex items-center justify-center border-2 border-foreground rounded-md">
-          <p className="text-2xl text-center text-foreground">
+        <div className="w-full h-[800px] flex items-center justify-center border-2 border-background rounded-md">
+          <p className="text-2xl text-center text-background">
             No data to visualize
           </p>
         </div>
@@ -88,7 +88,7 @@ const D3visual = ({ data }) => {
 
   return (
     <Container>
-      <div className="w-full h-full border-2 border-foreground rounded-md">
+      <div className="w-full h-full border-2 border-background rounded-md">
         <svg ref={svgRef} className="w-full h-full"></svg>
       </div>
     </Container>

@@ -5,7 +5,7 @@ import { NextResponse } from "next/server"
 export async function POST(request) {
   try {
     const body = await request.json()
-    const { graph, id, raw_text } = body
+    const { graph, id, raw_text, name } = body
 
     console.log("Request body:", body)
 
@@ -24,7 +24,7 @@ export async function POST(request) {
       graph: JSON.stringify(graph),
       userId: id,
       raw_text,
-      name: "Your Void Graph",
+      name: name || "Your Void Graph",
     })
 
     return NextResponse.json(

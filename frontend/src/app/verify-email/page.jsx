@@ -39,12 +39,12 @@ const VerifyEmail = () => {
       {isLoading ? (
         <p>Please wait, verifying...</p>
       ) : (
-        <div>
+        <div className="flex flex-col items-center justify-center">
           {isVerified ? (
             <>
               <p>{message}</p>
               <button
-                className="w-full mt-6 py-2 bg-darkgreen rounded-full form-btn"
+                className="w-40 mt-6 py-2 bg-background text-accent font-medium rounded-full hover:bg-zinc-300 transition"
                 onClick={() => router.push("/sign-in")}
               >
                 Sign In
