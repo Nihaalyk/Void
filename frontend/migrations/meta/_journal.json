@@ -8,6 +8,13 @@
       "when": 1729457622178,
       "tag": "0000_sour_human_cannonball",
       "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "7",
+      "when": 1729475388856,
+      "tag": "0001_small_the_executioner",
+      "breakpoints": true
     }
   ]
 }
