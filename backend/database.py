@@ -1,6 +1,7 @@
 # database.py
 
 import asyncpg
+import ollama
 import os
 from dotenv import load_dotenv
 
@@ -23,13 +24,15 @@ async def init_db():
         ''')
 
 async def store_extracted_data(user_id, text):
+    o = ollama.Client()
+    embed = str(o.embed(model='nomic-embed-text', input=text))
     async with db_pool.acquire() as connection:
         await connection.execute(
             '''
-            INSERT INTO extracted_data (user_id, content)
+            INSERT INTO extracted_data (user_id, content, embedding::vector(768))
             VALUES ($1, $2);
             ''',
-            user_id, text
+            user_id, text, embed
         )
 
 async def close_db():
