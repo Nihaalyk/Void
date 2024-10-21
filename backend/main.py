@@ -1,11 +1,10 @@
-from fastapi import FastAPI, File, UploadFile
-from get_yt_vids import get_study_resources
+from fastapi import FastAPI, File, UploadFile, HTTPException
+from get_yt_vids import get_study_materials
 import os
 from langchain_text_splitters import RecursiveCharacterTextSplitter
 from groq import AsyncGroq
 from dotenv import load_dotenv
-from fastapi import FastAPI, HTTPException
-import os
+from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 import asyncpg
 from routers.file_upload_router import router as file_upload_router
@@ -13,7 +12,8 @@ from database import init_db, close_db
 from processors.file_processor import process_file
 from nibs.generate_knowledge_graph_groq import summarize_with_groq
 from ollama import AsyncClient
-from fastapi.middleware.cors import CORSMiddleware
+from utils.goldfishmemory import GoldFishMemory
+import json
 
 load_dotenv()
 
@@ -28,12 +28,10 @@ app.add_middleware(
 
 app.include_router(file_upload_router)
 
-
 client = AsyncGroq(api_key=os.environ.get("GROQ_API_KEY"))
 ollama = AsyncClient(host='http://localhost:11434')
 
-# uncoment this code if you want to use the splitter  
-
+# Uncomment this code if you want to use the splitter  
 # splitter = RecursiveCharacterTextSplitter(
 #         chunk_size=8000,
 #         chunk_overlap=500
@@ -130,7 +128,6 @@ async def root(request: ChatRequest):
         -------------------
         '''
 
-
         messages = [
             {'role': 'system', 'content': system_prompt},
             *map(lambda row: {"role": row['role'], "content": row['content']}, rows),
@@ -143,7 +140,6 @@ async def root(request: ChatRequest):
                 model="llama3-8b-8192",
             )
         ).choices[0].message.content
-
 
         await db.execute(
             '''
@@ -164,19 +160,50 @@ async def test_route(file: UploadFile = File(...)):
 @app.post('/api/knowledge-graph')
 async def knowledge_graph(file: UploadFile = File(...)):
     try:
+        # Process the uploaded file and generate the knowledge graph
         text = await process_file(file)
-        summary = summarize_with_groq(text)
+        knowledge_graph = summarize_with_groq(text)
 
-        return summary
+        if not knowledge_graph:
+            raise Exception("Failed to generate knowledge graph.")
+
+        # Convert the knowledge graph to a JSON string for keyword extraction
+        knowledge_graph_text = json.dumps(knowledge_graph)
+
+        # Initialize GoldFishMemory and extract keywords
+        goldfish = GoldFishMemory()
+        keywords = goldfish.create_goldfish_memory(knowledge_graph_text, num_keywords=5)
+
+        if not keywords:
+            raise Exception("No keywords extracted from the knowledge graph.")
+
+        # For better API usage, use individual keywords instead of a comma-separated string
+        # Alternatively, you can choose a single keyword or the top keyword
+        # Here, we'll use the top keyword for fetching study materials
+        top_keyword = keywords[0] if keywords else "science"
+
+        # Fetch related resources using the extracted top keyword
+        resources = get_study_materials(
+            keyword=top_keyword,
+            youtube_api_key=os.getenv("YOUTUBE_API_KEY"),
+            google_api_key=os.getenv("GOOGLE_API_KEY"),
+            google_cx=os.getenv("GOOGLE_CSE_ID")
+        )
+
+        return {
+            "knowledge_graph": knowledge_graph,
+            "resources": resources
+        }
+
     except Exception as e:
         print(e)
         raise HTTPException(status_code=500, detail=f"Error: {str(e)}")
 
-# Your API keys here
-YOUTUBE_API_KEY = os.environ.get('YOUTUBE_API_KEY')
-GOOGLE_API_KEY = os.environ.get('GOOGLE_API_KEY')
-GOOGLE_CSE_ID = os.environ.get('GOOGLE_CSE_ID')
-
 @app.post('/yt_links')
 async def retrieve_yt_links(keyword: str):
-    return get_study_resources(keyword, YOUTUBE_API_KEY, GOOGLE_API_KEY, GOOGLE_CSE_ID)
+    return get_study_materials(
+        keyword, 
+        os.getenv("YOUTUBE_API_KEY"), 
+        os.getenv("GOOGLE_API_KEY"), 
+        os.getenv("GOOGLE_CSE_ID")
+    )
