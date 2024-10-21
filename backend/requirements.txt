@@ -1,5 +1,9 @@
 annotated-types==0.7.0
+wikipedia-api
 anyio==4.6.2.post1
+langchain-text-splitters
+google-api-python-client
+ollama
 asyncpg==0.30.0
 certifi==2024.8.30
 cffi==1.17.1

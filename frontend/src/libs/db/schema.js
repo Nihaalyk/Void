@@ -43,11 +43,20 @@ export const graphs = pgTable("graphs", {
   userId: uuid("user_id").references(() => users.id),
 })
 
-export const formattedTexts = pgTable("formatted_texts", {
-  id: uuid("id").primaryKey().defaultRandom(),
-  text: text().notNull(),
-  createdAt: timestamp("created_at").defaultNow(),
-})
+export const formattedTexts = pgTable("formatted_texts",
+  {
+    id: uuid("id").primaryKey().defaultRandom(),
+    text: text().notNull(),
+    createdAt: timestamp("created_at").defaultNow(),
+    embedding: vector('embedding', {
+      dimensions: parseInt(process.env.EMBEDDING_DIMENSION)
+    }),
+  },
+  (table) => ({
+    embeddingIndex: index('embeddingIndex')
+      .using('hnsw', table.embedding.op('vector_cosine_ops')),
+  })
+);
 
 export const roleEnum = pgEnum("role_enum", ["user", "assistant"])
 
