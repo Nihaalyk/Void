@@ -53,8 +53,9 @@ def summarize_with_groq(text):
     system_prompt = (
         "You are an assistant that structures data into a hierarchical multilevel knowledge graph in JSON format. "
         "The output should be a JSON object following this format: "
-        "{ \"name\": \"Root\", \"children\": [ { \"name\": \"Child 1\", \"children\": [ { \"name\": \"Grandchild 1\" }, { \"name\": \"Grandchild 2\" } ] }, { \"name\": \"Child 2\", \"children\": [ { \"name\": \"Grandchild 3\" }, { \"name\": \"Grandchild 4\" } ] } ] }. "
+        "{ \"name\": \"Root\", \"children\": [ { \"name\": \"Child 1\", \"children\": [ { \"name\": \"Grandchild 1\", \"children\": \"Description of Grandchild 1\" }, { \"name\": \"Grandchild 2\", \"children\": \"Description of Grandchild 2\" } ] }, { \"name\": \"Child 2\", \"children\": [ { \"name\": \"Grandchild 3\", \"children\": \"Description of Grandchild 3\" }, { \"name\": \"Grandchild 4\", \"children\": \"Description of Grandchild 4\" } ] } ] }. "
         "Ensure that only 'name' and 'children' keys are used. "
+        "The 'children' key for the last-level nodes should contain a brief summary or explanation of the node's title. "
         "Do not include any explanations, code snippets, or text outside the JSON. Provide only the JSON output."
     )
 
