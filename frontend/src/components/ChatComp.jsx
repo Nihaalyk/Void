@@ -10,28 +10,41 @@ const ChatComp = ({ currentUser }) => {
   const [messageText, setMessageText] = useState("")
   const [messages, setMessages] = useState([])
   const audioRef = useRef(null)
+  const messageEndRef = useRef(null);
+
+  const scrollToBottom = () => {
+    if (messageEndRef.current) {
+      messageEndRef.current.scrollIntoView({ behavior: 'smooth' });
+    }
+  };
+
+  useEffect(() => {
+    scrollToBottom();
+  }, [messages]);
 
   useEffect(() => {
     const fetchMessages = async () => {
       if (!currentUser) return
 
-      const response = await axios.post(
-        `https://tops-gibbon-friendly.ngrok-free.app/api/chat-history`,
-        { user_id: currentUser.id }
-      )
+      const response = (await axios.get(
+        `http://localhost:8000/api/chat-history?user_id=${currentUser.id}`,
+      )).data
 
-      console.log(response)
+      setMessages(response.messages)
     }
 
     fetchMessages()
-  }, [])
+  }, [currentUser])
 
   const handleSubmit = async () => {
-    const response = await axios.post("/api/chat", {
-      messageText,
-    })
-
-    setMessages([...messages, response.data])
+    const response = await axios.post("http://localhost:8000/api/chat",
+      {
+        user_id: currentUser.id,
+        prompt: messageText,
+      }
+    )
+    setMessages([...messages, { role: "user", content: messageText }, response.data])
+    setMessageText('')
   }
 
   const handleAudioFile = async (e) => {
@@ -68,6 +81,7 @@ const ChatComp = ({ currentUser }) => {
             role={message.role}
           />
         ))}
+        <div ref={messageEndRef} />
       </div>
       <div className="flex w-full gap-2 px-20 pb-6 mt-6">
         <div>
@@ -85,8 +99,10 @@ const ChatComp = ({ currentUser }) => {
 
         <input
           type="text"
+          value={messageText}
           placeholder="Ask a question"
           className="w-full border-2 border-background rounded-md p-2 text-xl text-accent"
+          onChange={e => setMessageText(e.target.value)}
         />
 
         <button
@@ -103,9 +119,8 @@ const ChatComp = ({ currentUser }) => {
 const Message = ({ message, role }) => {
   return (
     <div
-      className={`text-xl font-medium w-full px-20 rounded-md p-2 flex ${
-        role === "assistant" ? "justify-start" : "justify-end"
-      }`}
+      className={`text-xl font-medium w-full px-20 rounded-md p-2 flex ${role === "assistant" ? "justify-start" : "justify-end"
+        }`}
     >
       <div className="bg-background text-accent rounded-md py-2 px-8 max-w-[50%]">
         <p className="text-sm">{role}</p>

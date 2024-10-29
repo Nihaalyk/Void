@@ -12,7 +12,7 @@ from routers.file_upload_router import router as file_upload_router
 from database import init_db, close_db
 from processors.file_processor import process_file
 from nibs.generate_knowledge_graph_groq import summarize_with_groq
-from ollama import AsyncClient
+from ollama import Client
 from fastapi.middleware.cors import CORSMiddleware
 
 load_dotenv()
@@ -30,7 +30,7 @@ app.include_router(file_upload_router)
 
 
 client = AsyncGroq(api_key=os.environ.get("GROQ_API_KEY"))
-ollama = AsyncClient(host='http://localhost:11434')
+ollama = Client()
 
 # uncoment this code if you want to use the splitter  
 
@@ -70,72 +70,68 @@ class ChatRequest(BaseModel):
 
 @app.post("/api/chat")
 async def root(request: ChatRequest):
-    try:
-        rows = await db.fetch(
-            '''
-            SELECT id, role, content
-            FROM chat_history
-            WHERE user_id = $1;
-            ''', 
-            request.user_id
-        )
-
-        await db.execute(
-            '''
-            INSERT INTO chat_history (user_id, role, content)
-            VALUES ($1, 'user', $2);
-            ''',
-            request.user_id, request.prompt
-        )
-
-        model = os.environ.get('EMBEDDING_MODEL')
-        prompt_embedding = (await ollama.embed(
-            model=model,
-            input=request.prompt
-        ))['embeddings'][0]
-
-        context = await db.fetch('''
-         SELECT content
-         FROM extracted_data
-         WHERE user_id = $1
-         ORDER BY embedding::vector(768) <=> $2
-         LIMIT 10;
-        ''', request.user_id, str(prompt_embedding))
-
-        system_prompt = f'''
-        - You are an exceptionally intelligent, charismatic, and resourceful AI assistant. Your ability to understand and respond to user inquiries is unmatched. Provide insightful, engaging, and tailored responses that exceed expectations and leave a lasting impression. 
-        - If the user's prompt is related to the CONTEXT provided, base your response on that context for maximum relevance and effectiveness
-        ------CONTEXT------
-        {'\n'.join([record['content'] for record in context])}
-        -------------------
+    rows = await db.fetch(
         '''
+        SELECT id, role, content
+        FROM chat_history
+        WHERE user_id = $1;
+        ''', 
+        request.user_id
+    )
+
+    await db.execute(
+        '''
+        INSERT INTO chat_history (user_id, role, content)
+        VALUES ($1, 'user', $2);
+        ''',
+        request.user_id, request.prompt
+    )
+
+    prompt_embedding = (ollama.embed(
+        model='nomic-embed-text',
+        input=request.prompt
+    ))['embeddings'][0]
+
+    context = await db.fetch('''
+     SELECT content
+     FROM extracted_data
+     WHERE user_id = $1
+     ORDER BY embedding::vector(768) <=> $2
+     LIMIT 10;
+    ''', request.user_id, str(prompt_embedding))
+
+    system_prompt = f'''
+    - You are an exceptionally intelligent, charismatic, and resourceful AI assistant. Your ability to understand and respond to user inquiries is unmatched. Provide insightful, engaging, and tailored responses that exceed expectations and leave a lasting impression. 
+    - If the user's prompt is related to the CONTEXT provided, base your response on that context for maximum relevance and effectiveness
+    ------CONTEXT------
+    {'\n'.join([record['content'] for record in context])}
+    -------------------
+    '''
 
 
-        messages = [
-            {'role': 'system', 'content': system_prompt},
-            *map(lambda row: {"role": row['role'], "content": row['content']}, rows),
-            {'role': 'user', 'content': request.prompt}
-        ]
+    messages = [
+        {'role': 'system', 'content': system_prompt},
+        *map(lambda row: {"role": row['role'], "content": row['content']}, rows),
+        {'role': 'user', 'content': request.prompt}
+    ]
 
-        response = (
-            await client.chat.completions.create(
-                messages=messages,
-                model="llama3-8b-8192",
-            )
-        ).choices[0].message.content
-
-
-        await db.execute(
-            '''
-            INSERT INTO chat_history (user_id, role, content)
-            VALUES ($1, 'assistant', $2);
-            ''',
-            request.user_id, response
+    response = (
+        await client.chat.completions.create(
+            messages=messages,
+            model="llama-3.1-70b-versatile",
         )
+    ).choices[0].message.content
 
-        return {"role": 'assistant', "content": response}
-    except Exception as e:
-        raise HTTPException(status_code=500, detail=f"Error: {str(e)}")
+
+    await db.execute(
+        '''
+        INSERT INTO chat_history (user_id, role, content)
+        VALUES ($1, 'assistant', $2);
+        ''',
+        request.user_id, response
+    )
+
+    return {"role": 'assistant', "content": response}
 
 @app.post('/api/test')
 async def test_route(file: UploadFile = File(...)):

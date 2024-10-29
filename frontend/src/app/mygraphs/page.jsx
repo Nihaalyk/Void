@@ -10,9 +10,9 @@ const MyGraphs = () => {
   return (
     <section className="flex flex-row pt-20">
       <Collections setSelectedData={setSelectedData} />
+      <D3visual data={selectedData} />
       <div className="flex flex-col gap-10">
-        <D3visual data={selectedData} />
-        <Extra />
+        { /* <Extra /> */}
       </div>
     </section>
   )

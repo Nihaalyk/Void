@@ -32,7 +32,7 @@ const Choose = ({ currentUser }) => {
     setFileType(selectedFile.type)
   }
 
-  const handleFile = () => {
+  const handleFile = async () => {
     if (!file && !fileType) {
       message.error("Please upload a file")
       return
@@ -41,9 +41,9 @@ const Choose = ({ currentUser }) => {
     const formData = new FormData()
     formData.append("file", file)
 
-    axios
+    await axios
       .post(
-        "https://tops-gibbon-friendly.ngrok-free.app/api/knowledge-graph",
+        "http://localhost:8000/api/knowledge-graph",
         formData,
         {
           headers: {
@@ -72,7 +72,7 @@ const Choose = ({ currentUser }) => {
 
     axios
       .post(
-        "https://9820-2401-4900-61a6-1774-55a5-900c-c8c3-32a5.ngrok-free.app/api/knowledge-graph",
+        "http://localhost/api/knowledge-graph",
         formData,
         {
           headers: {
@@ -113,7 +113,7 @@ const Choose = ({ currentUser }) => {
       graphName("")
     } catch (error) {
       console.error("Error:", error)
-      message.error("Failed to save")
+      // message.error("Failed to save")
     }
   }
 
@@ -134,7 +134,7 @@ const Choose = ({ currentUser }) => {
             id="file-upload"
             accept="application/pdf, image/*, audio/*"
             onChange={handleFileChange}
-            className="border-2 rounded-md p-2  "
+            className="border-2 rounded-md p-2  bg-accent"
           />
 
           <button
@@ -153,7 +153,7 @@ const Choose = ({ currentUser }) => {
           <input
             type="text"
             placeholder="Graph name"
-            className="border-2 rounded-md p-2"
+            className="border-2 rounded-md p-2 text-accent"
             onChange={(e) => setGraphName(e.target.value)}
           />
           <div className="flex gap-x-4 mt-2">
